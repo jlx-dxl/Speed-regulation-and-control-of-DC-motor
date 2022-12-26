@@ -1,0 +1,223 @@
+C51 COMPILER V9.52.0.0   ZLDJ                                                              06/21/2018 12:18:32 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ZLDJ
+OBJECT MODULE PLACED IN zldj.OBJ
+COMPILER INVOKED BY: D:\Keil C51\C51\BIN\C51.EXE zldj.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          sbit IN1=P1^6;
+   5          sbit IN2=P1^7;
+   6          sbit ENA=P1^5;
+   7          sbit KEY0=P2^0;
+   8          sbit KEY1=P2^1;
+   9          sbit KEY2=P2^2;
+  10          sbit KEY3=P2^3;
+  11          sbit KEY4=P2^4;
+  12          sbit R=P2^5;
+  13          sbit Y=P2^6;
+  14          sbit G=P2^7;
+  15          sbit LED1=P1^0;
+  16          sbit LED2=P1^1;
+  17          sbit LED3=P1^2;
+  18          sbit LED4=P1^3;
+  19          sbit led=P1^4;
+  20          
+  21          bit flag=0;
+  22          bit sign=1;
+  23          uint num=0;
+  24          uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+  25          
+  26          
+  27          
+  28          void delay(uint n)
+  29          {
+  30   1         uint i,j;
+  31   1        for(i=n;i>0;i--)
+  32   1        for(j=0;j<110;j++);
+  33   1      }
+  34          
+  35          
+  36          void initial()
+  37          {
+  38   1        IN1=0;
+  39   1        IN2=0;
+  40   1        ENA=0;
+  41   1        num=0;
+  42   1        TMOD=0X01;
+  43   1        TL0=0XFF;
+  44   1        TH0=0XFF;
+  45   1        EA=1;
+  46   1        EX0=1;
+  47   1        ET0=1;
+  48   1        IT0=1;
+  49   1        TR0=1;
+  50   1      }
+  51          
+  52          
+  53          
+  54          void display(bit flag,uint n)
+  55          {
+C51 COMPILER V9.52.0.0   ZLDJ                                                              06/21/2018 12:18:32 PAGE 2   
+
+  56   1        uint v;
+  57   1        uchar qian,bai,shi,ge;
+  58   1        v=(uint)(n*535.0/255);
+  59   1        qian=v/1000;
+  60   1        bai=(v-1000*qian)/100;
+  61   1        shi=v%100/10;
+  62   1        ge=v%10;
+  63   1        
+  64   1        LED1=0;
+  65   1        if(flag==1)
+  66   1          P0=table[0];
+  67   1        else
+  68   1          P0=0X40;
+  69   1        delay(10);
+  70   1        LED1=1;
+  71   1        
+  72   1        LED2=0;
+  73   1        P0=table[bai];
+  74   1        delay(10);
+  75   1        LED2=1;
+  76   1        
+  77   1        LED3=0;
+  78   1        P0=table[shi];
+  79   1        delay(10);
+  80   1        LED3=1;
+  81   1        
+  82   1        LED4=0;
+  83   1        P0=table[ge];
+  84   1        delay(10);
+  85   1        LED4=1;
+  86   1      }
+  87          
+  88          
+  89          void main()
+  90          {
+  91   1        initial();
+  92   1        while(1)
+  93   1        {
+  94   2          display(sign,num);
+  95   2        }
+  96   1      }
+  97          
+  98          void int0() interrupt 0
+  99          {
+ 100   1        if(KEY0==0)
+ 101   1        {
+ 102   2          delay(10);
+ 103   2          if(KEY0==0)
+ 104   2          {
+ 105   3            flag=~flag;
+ 106   3            if(flag==0)
+ 107   3            {
+ 108   4              num=0;
+ 109   4              P2=0xff;
+ 110   4              ENA=0;
+ 111   4              IN1=0;
+ 112   4              IN2=0;
+ 113   4              G=0;
+ 114   4              sign=1;
+ 115   4            }
+ 116   3            else
+ 117   3            {
+C51 COMPILER V9.52.0.0   ZLDJ                                                              06/21/2018 12:18:32 PAGE 3   
+
+ 118   4              P2=0xff;
+ 119   4              num=100;
+ 120   4              IN1=0;
+ 121   4              IN2=1;
+ 122   4              R=0;
+ 123   4              sign=1;
+ 124   4            }
+ 125   3            while(!KEY0);
+ 126   3          }
+ 127   2        }
+ 128   1        if(KEY1==0)
+ 129   1        {
+ 130   2          delay(10);
+ 131   2          if(KEY1==0)
+ 132   2          {
+ 133   3            P2=0XFF;
+ 134   3            //ENA=1;
+ 135   3            IN1=0;
+ 136   3            IN2=1;
+ 137   3            R=0;
+ 138   3            sign=1;     
+ 139   3          }
+ 140   2          while(!KEY1);
+ 141   2        }
+ 142   1          if(KEY2==0)
+ 143   1        {
+ 144   2          delay(10);
+ 145   2          if(KEY2==0)
+ 146   2          {
+ 147   3            P2=0XFF;
+ 148   3            //ENA=1;
+ 149   3            IN1=1;
+ 150   3            IN2=0;
+ 151   3            Y=0;
+ 152   3            sign=0;     
+ 153   3          }
+ 154   2          while(!KEY2);
+ 155   2        }
+ 156   1          if(KEY3==0)
+ 157   1        {
+ 158   2          delay(10);
+ 159   2          if(KEY3==0)
+ 160   2          {
+ 161   3            num+=5;
+ 162   3            if(num>=255)
+ 163   3               num=255;       
+ 164   3          }
+ 165   2          while(!KEY3);
+ 166   2        }
+ 167   1            if(KEY4==0)
+ 168   1        {
+ 169   2          delay(10);
+ 170   2          if(KEY4==0)
+ 171   2          {
+ 172   3            num-=5;
+ 173   3            if(num<=0)
+ 174   3               num=0;       
+ 175   3          }
+ 176   2          while(!KEY4);
+ 177   2        }
+ 178   1      }
+ 179          
+C51 COMPILER V9.52.0.0   ZLDJ                                                              06/21/2018 12:18:32 PAGE 4   
+
+ 180          
+ 181          
+ 182          void itt0()interrupt 1
+ 183          {
+ 184   1        ENA=~ENA;
+ 185   1        TL0=0XFF;
+ 186   1        led=~led;
+ 187   1        if(ENA==1)
+ 188   1          TH0=255-num;
+ 189   1        else
+ 190   1          TH0=num;
+ 191   1      }
+ 192           
+ 193          
+ 194          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    487    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
